@@ -1,6 +1,18 @@
 # Video Highlight Tool
 
-A modern web application for creating video highlights with AI-generated transcripts. Upload a video, get an automatic transcript with sections and timestamps, select sentences to highlight, and preview your highlight reel in real-time.
+You can upload any video; it will be presented in a simulated format later.
+
+## Demo: https://video-highlight-tool-6gv1.vercel.app/
+
+---
+
+## 🖼️ Walkthrough
+
+![Step 1 – Upload a video](public/step1.png)
+
+![Step 2 – Review generated highlights](public/step2.png)
+
+![Step 3 – Play the curated reel](public/step3.png)
 
 ## ✨ Features
 
@@ -103,7 +115,7 @@ A modern web application for creating video highlights with AI-generated transcr
 
 **Benefits:**
 
-- Accessibility built-in (ARIA, keyboard nav)
+- Accessibility built-in (ARIA)
 - Unstyled primitives (perfect with Tailwind)
 - Composable and production-ready
 - shadcn/ui provides styled examples
@@ -119,17 +131,9 @@ A modern web application for creating video highlights with AI-generated transcr
 - Encourages accessibility
 - Less brittle tests
 
-**Test Coverage:** 111 tests across 10 files
-
 ---
 
 ### MSW (Mock Service Worker)
-
-**Chosen over alternatives:**
-
-- ✅ **vs axios-mock-adapter**: Works with any HTTP client
-- ✅ **vs manual mocking**: Same code in tests and development
-- ✅ **vs json-server**: Runs in browser, no extra server
 
 **Benefits:**
 
@@ -139,138 +143,25 @@ A modern web application for creating video highlights with AI-generated transcr
 
 ---
 
-## 🏗️ Architectural Decisions
-
 ### Native HTML5 Video Element
 
-**Why not react-player:**
-
-- ✅ More control over playback behavior
-- ✅ No external dependency (~2MB saved)
-- ✅ Better performance for local videos
-- ✅ Direct access to video events
-- ✅ Custom highlight-only playback logic needed
+- More control over playback behavior
+- No external dependency (~2MB saved)
+- Better performance for local videos
+- Direct access to video events
+- Custom highlight-only playback logic needed
 
 ### Event-Driven Architecture
 
-**Why `seeked` event over `setTimeout`:**
-
-- ✅ More reliable across devices/video sizes
-- ✅ No race conditions with slow-loading videos
-- ✅ Browser tells us when seek actually completes
-- ✅ Better UX on slow networks
-
-**Pattern:**
-
-```typescript
-video.currentTime = newTime;
-const handleSeeked = () => {
-  setIsProgrammaticSeek(false);
-  video.removeEventListener("seeked", handleSeeked);
-};
-video.addEventListener("seeked", handleSeeked);
-```
-
-### Single Store Pattern (Zustand)
-
-**Why centralized state:**
-
-- ✅ Single source of truth
-- ✅ Easier debugging
-- ✅ Predictable state updates
-- ✅ Better dev tools support
-
 ### Kebab-Case File Naming
 
-**Why kebab-case over PascalCase:**
-
-- ✅ Web standards (URLs use kebab-case)
-- ✅ Faster typing (no shift key)
-- ✅ Case-insensitive filesystem safe (Windows/macOS)
-- ✅ Modern convention
+- Web standards (URLs use kebab-case)
+- Faster typing (no shift key)
+- Modern convention
 
 Examples:
 
-- ✅ `video-player.tsx`, `use-video-player.ts`
-- ❌ `VideoPlayer.tsx`, `useVideoPlayer.ts`
-
-### Centralized Constants
-
-**Why extract magic numbers:**
-
-- ✅ Single source of truth for timing/thresholds
-- ✅ Easier to tune performance
-- ✅ Self-documenting code
-- ✅ Prevents typos
-
-Location: `src/constants/index.ts`
-
-### Performance Optimizations
-
-**Debounced Auto-Scroll (100ms):**
-
-- Prevents excessive DOM operations during playback
-- Smoother UX on slower devices
-- Tuned for perceived instant response
-
-**Early Bailout in toggleHighlight:**
-
-- Before: O(n) for all sentences
-- After: O(1) average, O(n) only for target section
-- Scales better with large transcripts (100+ sentences)
-
-**Memory Leak Prevention:**
-
-- Blob URL cleanup with `URL.revokeObjectURL()`
-- Timeout cleanup in hooks
-- Proper event listener removal
-
----
-
-## ⚠️ When NOT to Use These Choices
-
-### Don't use React if:
-
-- You need tiny bundle size → Use Preact/Svelte
-- Building static site → Use Astro/11ty
-
-### Don't use Vite if:
-
-- Complex Webpack loaders required
-- Legacy project (high migration cost)
-
-### Don't use Zustand if:
-
-- Need Redux DevTools extensively
-- Complex middleware ecosystem required
-- Team already expert in Redux
-
-### Don't use Tailwind if:
-
-- Strict design system in external CSS
-- Team prefers CSS-in-JS strongly
-- Utility classes feel unreadable
-
----
-
-## 🔄 Migration Paths
-
-**Zustand → Redux:**
-
-- Similar patterns, easy migration
-- Keep component structure
-
-**Vite → Next.js:**
-
-- If SSR/SSG needed later
-- Similar configuration
-
-**React 19 → React 18:**
-
-- Fully backwards compatible
-- Just change version
-
----
+- `video-player.tsx`, `use-video-player.ts`
 
 ## 📊 Complete Dependency List
 
@@ -341,7 +232,7 @@ npm install
 ### Development
 
 ```bash
-npm run dev         # Start dev server (http://localhost:5173)
+npm run dev         # Start dev server
 npm run build       # TypeScript compile + Vite production build
 npm run preview     # Preview production build
 npm run lint        # Run ESLint
@@ -351,20 +242,8 @@ npm run lint        # Run ESLint
 
 ```bash
 npm run test              # Run Vitest unit tests
-npm run test:ui           # Run tests with Vitest UI
 npm run test:coverage     # Generate coverage report
 ```
-
----
-
-## 📝 How to Use
-
-1. **Upload Video**: Drag & drop or click to upload MP4 file (max 500MB)
-2. **Wait for Processing**: Animated loading screen (~2-3 seconds)
-3. **View Transcript**: Transcript appears with sections and timestamps
-4. **Select Highlights**: Check sentences you want in highlight reel
-5. **Navigate**: Click timestamps, use keyboard shortcuts, or control bar
-6. **Watch**: Video plays only highlighted segments with text overlays
 
 ---
 
@@ -394,67 +273,6 @@ src/
 
 ---
 
-## 🎯 Recent Improvements (2025)
-
-### Code Quality
-
-- ✅ ErrorBoundary component added
-- ✅ Fixed blob URL memory leaks
-- ✅ Refactored use-video-player hook (comprehensive JSDoc)
-- ✅ Centralized constants file
-- ✅ Removed duplicate components
-
-### Performance
-
-- ✅ toggleHighlight optimization (early bailout)
-- ✅ Debounced auto-scroll (100ms)
-- ✅ Proper cleanup (timeouts, event listeners)
-
-### Accessibility
-
-- ✅ ARIA labels on video player and timeline
-- ✅ Keyboard navigation support
-- ✅ Screen reader friendly
-
-### UX
-
-- ✅ Upload button loading states
-- ✅ Error handling with user-friendly messages
-- ✅ Disabled states during operations
-
-### Testing
-
-- ✅ 111 unit tests (all passing)
-- ✅ VideoPlayer component tests
-- ✅ SentenceItem with debouncing tests
-- ✅ UploadArea accessibility tests
-
----
-
-## 🧪 Testing
-
-**Framework:** Vitest with happy-dom
-**Coverage:** 111 tests across 10 files
-**Focus:** Utilities, store actions, critical component behaviors
-
-Tests cover:
-
-- Video player rendering and functionality
-- Sentence auto-scroll with debouncing
-- Upload area UI and accessibility
-- Control bar navigation
-- Transcript store state management
-- Highlight playback utilities
-
----
-
-## 📱 Browser Support
-
-✅ Chrome, Firefox, Safari, Edge (latest)
-✅ iOS Safari, Android Chrome (latest)
-
----
-
 ## 🚀 Deployment
 
 ### Vercel (Recommended)
@@ -470,25 +288,3 @@ vercel --prod
 npm install -g netlify-cli
 netlify deploy --prod
 ```
-
----
-
-## 📖 Documentation
-
-For detailed AI assistant guidance and codebase documentation:
-
-- [CLAUDE.md](./CLAUDE.md) - Technical details, patterns, conventions
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Please ensure:
-
-- ✅ All tests pass (`npm run test`)
-- ✅ Code is linted (`npm run lint`)
-- ✅ TypeScript compiles (`npm run build`)
-- ✅ Follow kebab-case naming
-- ✅ Add JSDoc for complex logic
-
----
