@@ -15,14 +15,12 @@ interface TranscriptState {
   viewState: ViewState;
   processingStep: ProcessingStep;
   currentTime: number;
-  isUpdatingCurrentTime: boolean;
   isPlaying: boolean;
   activeSentenceId: string | null;
 
   loadTranscript: (file: File) => Promise<void>;
   toggleHighlight: (sentenceId: string) => void;
   setCurrentTime: (time: number) => void;
-  setIsUpdatingCurrentTime: (isUpdatingCurrentTime: boolean) => void;
   setIsPlaying: (playing: boolean) => void;
   setActiveSentenceId: (id: string | null) => void;
   seekToSentence: (sentenceId: string) => number | null;
@@ -35,7 +33,6 @@ const initialState = {
   viewState: "upload" as ViewState,
   processingStep: "idle" as ProcessingStep,
   currentTime: 0,
-  isUpdatingCurrentTime: false,
   isPlaying: false,
   activeSentenceId: null,
 };
@@ -95,10 +92,6 @@ export const useTranscriptStore = create<TranscriptState>((set, get) => ({
     set({ currentTime: time });
   },
 
-  setIsUpdatingCurrentTime: (updatingCurrentTime: boolean) => {
-    set({ isUpdatingCurrentTime: updatingCurrentTime });
-  },
-
   setIsPlaying: (playing: boolean) => {
     set({ isPlaying: playing });
   },
@@ -113,7 +106,6 @@ export const useTranscriptStore = create<TranscriptState>((set, get) => ({
     for (const section of transcript.sections) {
       for (const sentence of section.sentences) {
         if (sentence.id === sentenceId) {
-          set({ isUpdatingCurrentTime: true });
           set({ currentTime: sentence.start });
           return sentence.start;
         }
@@ -153,12 +145,12 @@ export const computeHighlightedSentences = (
 
 export const useCurrentHighlightText = () => {
   return useTranscriptStore((state) => {
-    const { transcript, activeSentenceId } = state;
-    if (!transcript || !activeSentenceId) return null;
+    const { transcript, currentTime } = state;
+    if (!transcript) return null;
 
     for (const section of transcript.sections) {
       for (const sentence of section.sentences) {
-        if (sentence.id === activeSentenceId && sentence.isHighlight) {
+        if (currentTime >= sentence.start && currentTime < sentence.end) {
           return sentence.text;
         }
       }
