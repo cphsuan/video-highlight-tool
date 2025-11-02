@@ -52,7 +52,7 @@ export const VideoPlayer = () => {
       const t = video.currentTime;
       setCurrentTime(t);
 
-      if (t >= endTime) {
+      if (t >= endTime - 0.05) {
         video.pause();
         setIsPlaying(false);
         return;
@@ -77,9 +77,6 @@ export const VideoPlayer = () => {
         );
         const next = sentences[idx + 1];
         if (isPlaying && next) {
-          console.log(
-            `➡️ ${currentSentence.sentenceId} ended → ${next.sentenceId}`
-          );
           setIsExternalSeek(true);
           video.currentTime = next.start;
           setActiveSentenceId(next.sentenceId);
@@ -108,7 +105,6 @@ export const VideoPlayer = () => {
     if (!video) return;
 
     if (Math.abs(video.currentTime - currentTime) > 0.1) {
-      console.log(`🎯 外部指定時間 → seek to ${currentTime}s`);
       setIsExternalSeek(true);
       video.currentTime = currentTime;
 
