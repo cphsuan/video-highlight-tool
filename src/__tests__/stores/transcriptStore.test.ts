@@ -29,6 +29,9 @@ vi.mock('@/lib/api/transcript', () => ({
   })),
 }))
 
+// Mock URL.createObjectURL for blob URL creation
+global.URL.createObjectURL = vi.fn(() => 'blob:test-url')
+
 const createTestFile = () =>
   new File(['content'], 'test.mp4', { type: 'video/mp4', lastModified: Date.now() })
 
@@ -61,7 +64,7 @@ describe('transcriptStore', () => {
       const state = useTranscriptStore.getState()
       expect(state.transcript).toBeDefined()
       expect(state.transcript?.videoId).toBe('test_video')
-      expect(state.videoUrl).toBe('/test_video.mp4')
+      expect(state.videoUrl).toBe('blob:test-url')
       expect(state.viewState).toBe('editor')
       expect(state.processingStep).toBe('idle')
     })

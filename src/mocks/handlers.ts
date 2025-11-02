@@ -16,7 +16,7 @@ export const handlers = [
       );
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     return HttpResponse.json({
       id: SAMPLE_UPLOAD_ID,
@@ -39,6 +39,14 @@ export const handlers = [
     return HttpResponse.json({
       transcript: sampleTranscript,
       videoUrl: SAMPLE_VIDEO_URL,
+    });
+  }),
+
+  http.get("/test_video.mp4", () => {
+    return HttpResponse.arrayBuffer(new ArrayBuffer(8), {
+      headers: {
+        "Content-Type": "video/mp4",
+      },
     });
   }),
 ];
