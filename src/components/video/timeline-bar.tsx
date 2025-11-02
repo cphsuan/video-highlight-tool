@@ -10,8 +10,15 @@ export const TimelineBar = () => {
   const duration = transcript.duration;
 
   return (
-    <div className="w-full" data-testid="timeline-bar">
-      <div className="relative h-3 bg-gray-700 rounded overflow-hidden">
+    <div className="w-full" data-testid="timeline-bar" aria-label="Video timeline">
+      <div
+        className="relative h-3 bg-gray-700 rounded overflow-hidden"
+        role="progressbar"
+        aria-valuenow={currentTime}
+        aria-valuemin={0}
+        aria-valuemax={duration}
+        aria-label={`Video progress: ${Math.round((currentTime / duration) * 100)}%`}
+      >
         {highlightedSentences.map((sentence) => {
           const startPercent = (sentence.start / duration) * 100;
           const widthPercent =
@@ -25,6 +32,7 @@ export const TimelineBar = () => {
                 left: `${startPercent}%`,
                 width: `${widthPercent}%`,
               }}
+              aria-label={`Highlight segment: ${sentence.text}`}
               title={sentence.text}
             />
           );
@@ -35,6 +43,7 @@ export const TimelineBar = () => {
           style={{
             left: `${(currentTime / duration) * 100}%`,
           }}
+          aria-label="Current playback position"
         >
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-red-500 rounded-full shadow-lg" />
         </div>

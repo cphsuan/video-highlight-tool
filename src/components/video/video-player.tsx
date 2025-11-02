@@ -22,6 +22,7 @@ export const VideoPlayer = () => {
           preload="auto"
           width={600}
           src={videoUrl}
+          aria-label="Video player showing highlight segments"
           className="max-w-full max-h-full"
         />
         <VideoOverlay />
