@@ -1,0 +1,4 @@
+{
+  "installCommand": "git lfs install --local && (git remote get-url origin >/dev/null 2>&1 && git lfs pull || echo \"Skipping git lfs pull (no remote available)\") && npm install",
+  "buildCommand": "git lfs install --local && (git remote get-url origin >/dev/null 2>&1 && git lfs pull || echo \"Skipping git lfs pull (no remote available)\") && npm run build"
+}
