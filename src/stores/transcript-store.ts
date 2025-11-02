@@ -47,6 +47,11 @@ export const useTranscriptStore = create<TranscriptState>((set, get) => ({
   ...initialState,
 
   loadTranscript: async (file: File) => {
+    const { videoUrl: previousVideoUrl } = get();
+    if (previousVideoUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(previousVideoUrl);
+    }
+
     set({ viewState: "processing", processingStep: "upload" });
 
     try {
@@ -135,6 +140,11 @@ export const useTranscriptStore = create<TranscriptState>((set, get) => ({
   },
 
   reset: () => {
+    const { videoUrl } = get();
+    if (videoUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(videoUrl);
+    }
+
     set({ ...initialState });
   },
 }));
