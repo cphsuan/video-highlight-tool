@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Upload, Video } from "lucide-react";
+import { Upload, Video, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ACCEPTED_VIDEO_MAP } from "@/constants/upload-video";
@@ -16,6 +16,7 @@ interface UploadAreaProps {
 export const UploadArea = ({ onUploadClick }: UploadAreaProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const MAX_FILE_SIZE = 500 * 1024 * 1024;
 
@@ -43,7 +44,15 @@ export const UploadArea = ({ onUploadClick }: UploadAreaProps) => {
 
   const handleUpload = async () => {
     if (selectedFile) {
-      await onUploadClick(selectedFile);
+      setIsUploading(true);
+      try {
+        await onUploadClick(selectedFile);
+      } catch (error) {
+        console.error("Upload failed:", error);
+        setError("Failed to upload video. Please try again.");
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -76,9 +85,23 @@ export const UploadArea = ({ onUploadClick }: UploadAreaProps) => {
           </div>
 
           {selectedFile && !error && (
-            <Button size="lg" className="mt-4 gap-2" onClick={handleUpload}>
-              <Upload className="w-5 h-5" />
-              Process Video
+            <Button
+              size="lg"
+              className="mt-4 gap-2"
+              onClick={handleUpload}
+              disabled={isUploading}
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-5 h-5" />
+                  Process Video
+                </>
+              )}
             </Button>
           )}
         </div>
