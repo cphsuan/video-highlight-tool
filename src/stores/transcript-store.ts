@@ -94,16 +94,26 @@ export const useTranscriptStore = create<TranscriptState>((set, get) => ({
     const { transcript } = get();
     if (!transcript) return;
 
+    let found = false;
     const updatedTranscript = {
       ...transcript,
-      sections: transcript.sections.map((section) => ({
-        ...section,
-        sentences: section.sentences.map((sentence) =>
-          sentence.id === sentenceId
-            ? { ...sentence, isHighlight: !sentence.isHighlight }
-            : sentence
-        ),
-      })),
+      sections: transcript.sections.map((section) => {
+        if (found || !section.sentences.some((s) => s.id === sentenceId)) {
+          return section;
+        }
+
+        const updatedSection = {
+          ...section,
+          sentences: section.sentences.map((sentence) =>
+            sentence.id === sentenceId
+              ? { ...sentence, isHighlight: !sentence.isHighlight }
+              : sentence
+          ),
+        };
+
+        found = true;
+        return updatedSection;
+      }),
     };
 
     set({

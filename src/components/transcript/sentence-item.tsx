@@ -11,15 +11,29 @@ interface SentenceItemProps {
 
 export const SentenceItem = ({ sentence, isActive }: SentenceItemProps) => {
   const sentenceRef = useRef<HTMLDivElement>(null);
+  const scrollTimeoutRef = useRef<number | null>(null);
   const { toggleHighlight, seekToSentence } = useTranscriptStore();
 
   useEffect(() => {
     if (isActive && sentenceRef.current) {
-      sentenceRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+      if (scrollTimeoutRef.current !== null) {
+        window.clearTimeout(scrollTimeoutRef.current);
+      }
+
+      scrollTimeoutRef.current = window.setTimeout(() => {
+        sentenceRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        scrollTimeoutRef.current = null;
+      }, 100);
     }
+
+    return () => {
+      if (scrollTimeoutRef.current !== null) {
+        window.clearTimeout(scrollTimeoutRef.current);
+      }
+    };
   }, [isActive]);
 
   const handleTimestampClick = () => {
