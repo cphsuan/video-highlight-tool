@@ -52,6 +52,7 @@ export const useVideoPlayer = () => {
     ) => {
       setIsExternalSeek(true);
       video.currentTime = time;
+      setCurrentTime(time);
       if (sentenceId) {
         setActiveSentenceId(sentenceId);
       }
@@ -59,7 +60,7 @@ export const useVideoPlayer = () => {
         scheduleExternalSeekReset(delay);
       }
     },
-    [scheduleExternalSeekReset, setActiveSentenceId]
+    [scheduleExternalSeekReset, setActiveSentenceId, setCurrentTime]
   );
 
   useEffect(() => {
