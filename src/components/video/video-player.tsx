@@ -4,6 +4,7 @@ import { useVideoPlayer } from "@/hooks/use-video-player";
 import { TimelineBar } from "./timeline-bar";
 import { VideoOverlay } from "./video-overlay";
 import { ControlBar } from "./control-bar";
+import { VIDEO_DEFAULT_WIDTH } from "@/constants";
 
 export const VideoPlayer = () => {
   const { videoRef, videoUrl, handlePlayPause } = useVideoPlayer();
@@ -20,7 +21,7 @@ export const VideoPlayer = () => {
         <video
           ref={videoRef}
           preload="auto"
-          width={600}
+          width={VIDEO_DEFAULT_WIDTH}
           src={videoUrl}
           aria-label="Video player showing highlight segments"
           className="max-w-full max-h-full"

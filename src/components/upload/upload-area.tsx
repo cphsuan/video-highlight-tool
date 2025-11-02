@@ -3,6 +3,7 @@ import { Upload, Video, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ACCEPTED_VIDEO_MAP } from "@/constants/upload-video";
+import { MAX_VIDEO_FILE_SIZE } from "@/constants";
 import {
   getUploadVideoErrorMessage,
   validateFile,
@@ -18,10 +19,8 @@ export const UploadArea = ({ onUploadClick }: UploadAreaProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const MAX_FILE_SIZE = 500 * 1024 * 1024;
-
   const handleFileSelect = (file: File) => {
-    const validationError = validateFile(file, MAX_FILE_SIZE);
+    const validationError = validateFile(file, MAX_VIDEO_FILE_SIZE);
     if (validationError) {
       setError(validationError);
       setSelectedFile(null);
@@ -77,7 +76,7 @@ export const UploadArea = ({ onUploadClick }: UploadAreaProps) => {
               selectedFile={selectedFile}
               error={error}
               accept={ACCEPTED_VIDEO_MAP}
-              maxFileSize={MAX_FILE_SIZE}
+              maxFileSize={MAX_VIDEO_FILE_SIZE}
               onDrop={handleFileSelect}
               onClear={handleClearFile}
               onError={handleDropError}

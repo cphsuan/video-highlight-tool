@@ -3,6 +3,7 @@ import { formatTime } from "@/utils/time-utils";
 import { useTranscriptStore } from "@/stores/transcript-store";
 import { cn } from "@/lib/utils";
 import type { Sentence } from "@/types/transcript";
+import { SENTENCE_SCROLL_DEBOUNCE_DELAY } from "@/constants";
 
 interface SentenceItemProps {
   sentence: Sentence;
@@ -26,7 +27,7 @@ export const SentenceItem = ({ sentence, isActive }: SentenceItemProps) => {
           block: "center",
         });
         scrollTimeoutRef.current = null;
-      }, 100);
+      }, SENTENCE_SCROLL_DEBOUNCE_DELAY);
     }
 
     return () => {
