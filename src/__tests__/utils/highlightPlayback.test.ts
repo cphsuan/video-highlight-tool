@@ -4,6 +4,7 @@ import {
   getNextHighlightSegment,
   getPreviousHighlightSegment,
   shouldSeekToNextSegment,
+  getSentenceTextAtTime,
 } from '@/utils/highlight-playback'
 import type { Transcript } from '@/types/transcript'
 
@@ -102,6 +103,28 @@ describe('getHighlightSegments', () => {
 
     const segments = getHighlightSegments(transcript)
     expect(segments).toEqual([])
+  })
+})
+
+describe('getSentenceTextAtTime', () => {
+  it('returns null when transcript is missing', () => {
+    expect(getSentenceTextAtTime(null, 5)).toBeNull()
+  })
+
+  it('returns matching sentence text when within bounds', () => {
+    const transcript = createMockTranscript()
+    expect(getSentenceTextAtTime(transcript, 6)).toBe('Second sentence')
+  })
+
+  it('respects sentence end boundaries', () => {
+    const transcript = createMockTranscript()
+    expect(getSentenceTextAtTime(transcript, 15)).toBe('Fourth sentence')
+    expect(getSentenceTextAtTime(transcript, 20)).toBe('Fifth sentence')
+  })
+
+  it('returns null when no sentence matches time', () => {
+    const transcript = createMockTranscript()
+    expect(getSentenceTextAtTime(transcript, 99)).toBeNull()
   })
 })
 

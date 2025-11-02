@@ -73,3 +73,22 @@ export const getPreviousHighlightSegment = (
 
   return previous;
 };
+
+export const getSentenceTextAtTime = (
+  transcript: Transcript | null,
+  currentTime: number
+): string | null => {
+  if (!transcript) return null;
+
+  for (const section of transcript.sections) {
+    for (const sentence of section.sentences) {
+      const startsBeforeCurrent = currentTime >= sentence.start;
+      const endsAfterCurrent = currentTime < sentence.end;
+      if (startsBeforeCurrent && endsAfterCurrent) {
+        return sentence.text;
+      }
+    }
+  }
+
+  return null;
+};

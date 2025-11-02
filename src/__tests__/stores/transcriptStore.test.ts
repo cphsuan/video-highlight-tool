@@ -30,7 +30,7 @@ vi.mock('@/lib/api/transcript', () => ({
 }))
 
 // Mock URL.createObjectURL for blob URL creation
-global.URL.createObjectURL = vi.fn(() => 'blob:test-url')
+globalThis.URL.createObjectURL = vi.fn(() => 'blob:test-url')
 
 const createTestFile = () =>
   new File(['content'], 'test.mp4', { type: 'video/mp4', lastModified: Date.now() })

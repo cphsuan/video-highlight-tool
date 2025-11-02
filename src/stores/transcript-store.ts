@@ -7,6 +7,10 @@ import type {
 import { uploadVideo } from "@/lib/api/upload";
 import { fetchTranscript } from "@/lib/api/transcript";
 import type { ProcessingStep } from "@/constants/loading";
+import {
+  getHighlightSegments,
+  getSentenceTextAtTime,
+} from "@/utils/highlight-playback";
 
 interface TranscriptState {
   transcript: Transcript | null;
@@ -17,6 +21,7 @@ interface TranscriptState {
   currentTime: number;
   isPlaying: boolean;
   activeSentenceId: string | null;
+  highlightSegments: HighlightSegment[];
 
   loadTranscript: (file: File) => Promise<void>;
   toggleHighlight: (sentenceId: string) => void;
@@ -35,6 +40,7 @@ const initialState = {
   currentTime: 0,
   isPlaying: false,
   activeSentenceId: null,
+  highlightSegments: [] as HighlightSegment[],
 };
 
 export const useTranscriptStore = create<TranscriptState>((set, get) => ({
@@ -62,10 +68,20 @@ export const useTranscriptStore = create<TranscriptState>((set, get) => ({
         videoUrl: blobUrl,
         viewState: "editor",
         processingStep: "idle",
+        currentTime: 0,
+        isPlaying: false,
+        activeSentenceId: null,
+        highlightSegments: getHighlightSegments(transcript),
       });
     } catch (error) {
       console.error("Failed to load transcript:", error);
-      set({ viewState: "upload", processingStep: "idle" });
+      set({
+        viewState: "upload",
+        processingStep: "idle",
+        transcript: null,
+        videoUrl: null,
+        highlightSegments: [],
+      });
     }
   },
 
@@ -85,7 +101,10 @@ export const useTranscriptStore = create<TranscriptState>((set, get) => ({
       })),
     };
 
-    set({ transcript: updatedTranscript });
+    set({
+      transcript: updatedTranscript,
+      highlightSegments: getHighlightSegments(updatedTranscript),
+    });
   },
 
   setCurrentTime: (time: number) => {
@@ -116,45 +135,17 @@ export const useTranscriptStore = create<TranscriptState>((set, get) => ({
   },
 
   reset: () => {
-    set(initialState);
+    set({ ...initialState });
   },
 }));
 
-export const computeHighlightedSentences = (
-  transcript: Transcript | null
-): HighlightSegment[] => {
-  if (!transcript) return [];
-
-  const highlighted: HighlightSegment[] = [];
-  for (const section of transcript.sections) {
-    for (const sentence of section.sentences) {
-      if (sentence.isHighlight) {
-        highlighted.push({
-          sentenceId: sentence.id,
-          start: sentence.start,
-          end: sentence.end,
-          text: sentence.text,
-          sectionId: section.id,
-          sectionTitle: section.title,
-        });
-      }
-    }
-  }
-  return highlighted;
-};
+export const computeHighlightedSentences = getHighlightSegments;
 
 export const useCurrentHighlightText = () => {
   return useTranscriptStore((state) => {
-    const { transcript, currentTime } = state;
-    if (!transcript) return null;
-
-    for (const section of transcript.sections) {
-      for (const sentence of section.sentences) {
-        if (currentTime >= sentence.start && currentTime < sentence.end) {
-          return sentence.text;
-        }
-      }
-    }
-    return null;
+    return getSentenceTextAtTime(state.transcript, state.currentTime);
   });
 };
+
+export const useHighlightSegments = () =>
+  useTranscriptStore((state) => state.highlightSegments);

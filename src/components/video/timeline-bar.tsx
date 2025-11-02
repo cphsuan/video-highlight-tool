@@ -1,16 +1,9 @@
-import { useMemo } from "react";
-import {
-  useTranscriptStore,
-  computeHighlightedSentences,
-} from "@/stores/transcript-store";
+import { useTranscriptStore, useHighlightSegments } from "@/stores/transcript-store";
 
 export const TimelineBar = () => {
   const transcript = useTranscriptStore((state) => state.transcript);
   const currentTime = useTranscriptStore((state) => state.currentTime);
-
-  const highlightedSentences = useMemo(() => {
-    return computeHighlightedSentences(transcript);
-  }, [transcript]);
+  const highlightedSentences = useHighlightSegments();
 
   if (!transcript) return null;
 
